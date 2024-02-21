@@ -15,6 +15,7 @@ import java.net.http.HttpClient;
 
 public class ViaCepService {
 
+
     public Endereco getEndereco(String cep) {
         Endereco endereco = null;
         HttpGet request = new HttpGet("https://viacep.com.br/ws/"+cep+"/json/");
