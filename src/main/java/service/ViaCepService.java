@@ -11,37 +11,69 @@ import org.apache.hc.core5.http.ParseException;
 import org.apache.hc.core5.http.io.entity.EntityUtils;
 
 import java.io.IOException;
-import java.net.http.HttpClient;
+import java.util.Objects;
+import java.util.stream.Stream;
 
 public class ViaCepService {
 
+    private Endereco endereco = null;
+    public String cep;
 
-    public Endereco getEndereco(String cep) {
-        Endereco endereco = null;
+    public ViaCepService(String cep) {
+        this.cep = cep;
+        Endereco endereco = buscar(cep);
+
+        System.out.println(endereco);
+    }
+
+    public ViaCepService() {}
+
+    public Endereco buscar(String cep) {
         HttpGet request = new HttpGet("https://viacep.com.br/ws/"+cep+"/json/");
 
         try (
                 CloseableHttpClient httpClient = HttpClientBuilder.create()
                         .disableRedirectHandling()
                         .build();
-                CloseableHttpResponse response = httpClient.execute(request);
+                CloseableHttpResponse response = httpClient.execute(request)
             )
         {
             HttpEntity entity = response.getEntity();
             if (entity == null) {return endereco;}
 
             String result = getEntityString(entity);
-            endereco = convertToEndereco(result);
+            this.endereco = convertToEndereco(result);
         }
         catch (IOException e) {
             throw new RuntimeException(e);
         }
 
-        return endereco;
+        return this.endereco;
     }
+   public Endereco buscar() {
+        HttpGet request = new HttpGet("https://viacep.com.br/ws/"+this.cep+"/json/");
 
+        try (
+                CloseableHttpClient httpClient = HttpClientBuilder.create()
+                        .disableRedirectHandling()
+                        .build();
+                CloseableHttpResponse response = httpClient.execute(request)
+        )
+        {
+            HttpEntity entity = response.getEntity();
+            if (entity == null) {return endereco;}
+
+            String result = getEntityString(entity);
+            this.endereco = convertToEndereco(result);
+        }
+        catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+        return this.endereco;
+    }
     private static String getEntityString(HttpEntity entity) {
-        String entityString = null;
+        String entityString;
         try {
             entityString = EntityUtils.toString(entity);
         }
