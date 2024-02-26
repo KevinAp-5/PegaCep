@@ -20,8 +20,13 @@ public class ViaCepService {
     public String cep;
 
     public ViaCepService(String cep) {
-        this.cep = cep;
         Endereco endereco = buscar(cep);
+        if (this.cepExists()) {
+            System.out.println("O cep existe");
+        }
+        else {
+            System.out.println("O cep não existe");
+        }
 
         System.out.println(endereco);
     }
@@ -29,6 +34,8 @@ public class ViaCepService {
     public ViaCepService() {}
 
     public Endereco buscar(String cep) {
+        cep = this.validCep(cep);
+        this.cep = cep;
         HttpGet request = new HttpGet("https://viacep.com.br/ws/"+cep+"/json/");
 
         try (
@@ -51,6 +58,7 @@ public class ViaCepService {
         return this.endereco;
     }
    public Endereco buscar() {
+        this.cep = this.validCep(this.cep);
         HttpGet request = new HttpGet("https://viacep.com.br/ws/"+this.cep+"/json/");
 
         try (
@@ -92,14 +100,24 @@ public class ViaCepService {
 
     }
 
-    public boolean validCep(String cep) {
-        // TODO: Fazer um formatador de string para converter as string erradas
+    public String validCep(String cep) {
+        cep = cep.replace("-", "");
+        cep = cep.replace(" ", "");
+
+        System.out.println(cep);
 
         if (cep.length() != 8 || !cep.matches("\\d+")) {
             throw new IllegalArgumentException("Tamanho de cep INVÁLIDO");
         }
 
-        return true;
+        return cep;
+    }
+
+    public boolean cepExists(Endereco endereco) {
+        boolean cepExist = Stream.of(endereco.getCep(), endereco.getUf())
+                .allMatch(Objects:: isNull);
+
+        return !cepExist;
     }
 
     public boolean cepExists() {
@@ -108,7 +126,6 @@ public class ViaCepService {
 
         return !cepExist;
     }
-
     public Endereco getEndereco() {
         return this.endereco;
     }
