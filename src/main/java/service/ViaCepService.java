@@ -84,12 +84,22 @@ public class ViaCepService {
     }
 
     private static Endereco convertToEndereco(String responseResult) {
-        Endereco endereco = null;
+        Endereco endereco;
         Gson gson = new Gson();
 
         endereco = gson.fromJson(responseResult, Endereco.class);
         return endereco;
 
+    }
+
+    public boolean validCep(String cep) {
+        // TODO: Fazer um formatador de string para converter as string erradas
+
+        if (cep.length() != 8 || !cep.matches("\\d+")) {
+            throw new IllegalArgumentException("Tamanho de cep INVÁLIDO");
+        }
+
+        return true;
     }
 
     public boolean cepExists() {
