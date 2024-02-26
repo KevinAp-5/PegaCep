@@ -59,4 +59,27 @@ public class ViaCepService {
         return endereco;
 
     }
+
+    public boolean cepExists() {
+        boolean cepExist = Stream.of(endereco.getCep(), endereco.getUf())
+                .allMatch(Objects:: isNull);
+
+        return !cepExist;
+    }
+
+    public Endereco getEndereco() {
+        return this.endereco;
+    }
+
+    public void setEndereco(Endereco endereco) {
+        this.endereco = endereco;
+    }
+
+    public String getCep() {
+        return cep;
+    }
+
+    public void setCep(String cep) {
+        this.cep = cep;
+    }
 }
